@@ -79,6 +79,11 @@ namespace Backend.Services
                 newUser.Password = BCrypt.Net.BCrypt.HashPassword(accountDataDto.Password);
                 newUser.Id = Guid.NewGuid().ToString();
 
+                if(newUser.AccountType == AccountType.Shopper)
+                {
+                    newUser.AccountVerified = true;
+                }
+
                 _context.Users.Add(newUser);
                 _context.SaveChanges();
                 return;
@@ -94,6 +99,10 @@ namespace Backend.Services
                 User newUser = _mapper.Map<User>(accountDataDto);
                 newUser.Password = BCrypt.Net.BCrypt.HashPassword(accountDataDto.Password);
                 newUser.Id = Guid.NewGuid().ToString();
+                if (newUser.AccountType == AccountType.Shopper)
+                {
+                    newUser.AccountVerified = true;
+                }
 
                 _context.Users.Add(newUser);
                 _context.SaveChanges();
