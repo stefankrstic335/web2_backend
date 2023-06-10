@@ -16,7 +16,7 @@ namespace Backend.Database.Configuration
             builder.Property(x => x.AccountType).IsRequired();
             builder.Property(x => x.Password).HasMaxLength(255);
             builder.Property(x => x.DateOfBirth).IsRequired();
-            builder.Property(x => x.AccountVerified).IsRequired();
+            builder.Property(x => x.AccountStatus).IsRequired();
             builder.Property(x => x.Address).IsRequired();
 
         }

@@ -8,6 +8,7 @@ namespace Backend.Interfaces
         void AddProduct(ProductDto productDto);
         void RemoveProduct(ProductDto productDto);
         List<ProductDto> GetProducts();
+        List<ProductDto> GetProductsForMerchant(string merchantId);
 
     }
 }

@@ -12,7 +12,7 @@ namespace Backend.Interfaces
         AccountLoginDto UpdateAccount(AccountLoginDto accountLoginDto);
         bool IsMerchantVerified(string email);
         string UploadImage(IFormFile imageFile, string email);
-
+        void BlockMerchant(string merchantId);
         AccountDataDto GetUserProfile(string email);
 
     }

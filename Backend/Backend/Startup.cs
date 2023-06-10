@@ -1,5 +1,6 @@
 using AutoMapper;
 using Backend.Database;
+using Backend.Database.Configuration;
 using Backend.Interfaces;
 using Backend.Mapping;
 using Backend.Services;
@@ -67,10 +68,6 @@ namespace Backend
             });
 
             services.AddDbContext<LocalDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("onlineShopDatabase")));
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireClaim("AdminClaim"));
-            });
 
             services.AddAuthentication(opt =>
             {
@@ -100,7 +97,8 @@ namespace Backend
                 });
             });
 
-
+            var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new MappingProfile());
@@ -112,7 +110,7 @@ namespace Backend
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IAccountService, AccountService>();
-            //services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IEmailService, EmailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -135,11 +133,11 @@ namespace Backend
             app.UseAuthorization();
 
             app.UseStaticFiles();
-            //app.UseStaticFiles(new StaticFileOptions()
-            //{
-            //    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
-            //    RequestPath = new PathString("/Resources")
-            //});
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                RequestPath = new PathString("/Resources")
+            });
 
             app.UseEndpoints(endpoints =>
             {

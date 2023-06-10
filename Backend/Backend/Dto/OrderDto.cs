@@ -5,12 +5,14 @@ namespace Backend.Dto
 {
     public class OrderDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string OrderUserEmail { get; set; }
 
         public string ShopperAddress { get; set; }
 
-        public List<Product> OrderedProducts { get; set; }
+        public OrderStatus Status { get; set; }
+
+        public List<ProductDto> OrderedProducts { get; set; }
     }
 }

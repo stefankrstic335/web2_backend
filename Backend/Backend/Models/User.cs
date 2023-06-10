@@ -2,6 +2,13 @@
 
 namespace Backend.Models
 {
+    public enum AccountStatus
+    {
+        New,
+        Verified,
+        Blocked
+    }
+
     public class User
     {
         public string Id { get; set; }  
@@ -22,7 +29,7 @@ namespace Backend.Models
 
         public string ImageUrl { get; set; }
 
-        public bool AccountVerified { get; set; }
+        public AccountStatus AccountStatus { get; set; }
 
         public User() 
         {

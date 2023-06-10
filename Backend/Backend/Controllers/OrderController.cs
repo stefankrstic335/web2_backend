@@ -1,11 +1,13 @@
 ﻿using Backend.Dto;
 using Backend.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/order")]
     [ApiController]
     public class OrderController : ControllerBase
     {
@@ -17,29 +19,43 @@ namespace Backend.Controllers
         }
 
         [HttpGet("getAllOrders")]
-        //[Authorize(Roles = "deliverer")]
+        [Authorize(Roles = "admin")]
         public IActionResult GetAllOrders()
         {
             return Ok(_orderService.GetAllOrders());
         }
 
 
-        [HttpGet("getOrders")]
-        //[Authorize(Roles = "deliverer")]
-        public IActionResult GetOrders(string email)
+        [HttpGet("getNonCanceledOrders")]
+        [Authorize(Roles = "shopper")]
+        public IActionResult GetNonCanceledOrders(string email)
         {
-            return Ok(_orderService.GetOrders(email));
+            return Ok(_orderService.GetNonCanceledOrdersShopper(email));
+        }
+        [HttpGet("getCanceledOrders")]
+        [Authorize(Roles = "shopper")]
+        public IActionResult GetCanceledOrders(string email)
+        {
+            return Ok(_orderService.GetCanceledOrdersShopper(email));
         }
 
         [HttpPost("createOrder")]
-        //[Authorize(Roles = "customer")]
+        [Authorize(Roles = "shopper")]
         public IActionResult CreateOrder(OrderDto orderDto)
         {
-            return Ok(_orderService.CreateOrder(orderDto));
+            try
+            {
+                bool res = _orderService.CreateOrder(orderDto);
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("completeOrder")]
-        //[Authorize(Roles = "deliverer")]
+        [Authorize(Roles = "merchant")]
         public IActionResult DeliverOrder(string orderId)
         {
             _orderService.CompleteOrder(orderId);

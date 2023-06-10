@@ -23,11 +23,16 @@ namespace Backend.Controllers
             var token = _loginService.Login(login);
             if (token != null)
             {
+                if(token == string.Empty)
+                {
+                    return BadRequest("Wrong password!");
+
+                }
                 return Ok(token);
             }
             else
             {
-                return BadRequest("Wrong password!");
+                return BadRequest("Wrong email!");
             }
 
         }

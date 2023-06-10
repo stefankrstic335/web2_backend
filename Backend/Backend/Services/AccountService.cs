@@ -40,7 +40,16 @@ namespace Backend.Services
 
         public bool IsMerchantVerified(string email)
         {
-            return _context.Users.FirstOrDefault(x => x.Email == email).AccountVerified;
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
+            if(user.AccountStatus == AccountStatus.Verified)
+            {
+                return true;
+            }
+            if(user.AccountStatus == AccountStatus.Blocked)
+            {
+                return false;
+            }
+            return false;
         }
 
         public AccountLoginDto UpdateAccount(AccountLoginDto accountLoginDto)
@@ -91,12 +100,14 @@ namespace Backend.Services
 
         public void VerifyMerchant(string merchantId)
         {
-            var merchant = _context.Users.Where(x => x.Email == merchantId).FirstOrDefault();
-            if (merchant != null)
-            {
-                merchant.AccountVerified = true;
-
-            }
+            var merchant = _context.Users.Where(x => x.Email == merchantId && x.AccountType == AccountType.Merchant).FirstOrDefault(); 
+            merchant.AccountStatus = AccountStatus.Verified;
+            _context.SaveChanges();
+        }
+        public void BlockMerchant(string merchantId)
+        {
+            var merchant = _context.Users.Where(x => x.Email == merchantId && x.AccountType == AccountType.Merchant).FirstOrDefault();
+            merchant.AccountStatus = AccountStatus.Blocked;
             _context.SaveChanges();
         }
     }

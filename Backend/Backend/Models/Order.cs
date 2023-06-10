@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 namespace Backend.Models
 {
+
+    public enum OrderStatus
+    {
+        Canceled,
+        InProgress,
+        Completed
+    }
+
     public class Order
     {
         public string Id { get; set; }
@@ -17,8 +25,9 @@ namespace Backend.Models
         public DateTime EndTime { get; set; }
 
         public int DeliveryPrice { get; set; }
+            
+        public OrderStatus OrderStatus { get; set; }
         
-        public bool IsCompleted { get; set; }
         public Order()
         {
             Id = Guid.NewGuid().ToString();

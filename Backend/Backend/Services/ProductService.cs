@@ -3,7 +3,9 @@ using Backend.Database;
 using Backend.Dto;
 using Backend.Interfaces;
 using Backend.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Backend.Services
 {
@@ -18,9 +20,15 @@ namespace Backend.Services
             _context = context;
         }
 
+        public List<ProductDto> GetProductsForMerchant(string merchantId)
+        {
+            return _mapper.Map<List<ProductDto>>(_context.Products.Where(x => x.MerchantId == merchantId));
+        }
+
         public void AddProduct(ProductDto productDto)
         {
             var prod = _mapper.Map<Product>(productDto);
+            prod.Id = Guid.NewGuid().ToString();
             _context.Products.Add(prod);
             _context.SaveChanges();
         }

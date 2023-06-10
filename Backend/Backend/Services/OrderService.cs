@@ -21,12 +21,28 @@ namespace Backend.Services
             _context = context;
         }
 
+        public void CancelOrder(string orderId)
+        {
+            var order = _context.Orders.FirstOrDefault(x => x.Id == orderId);
+            if (order != null)
+            {
+                order.OrderStatus = OrderStatus.Canceled;
+
+                foreach(Product product in order.OrderedProducts)
+                {
+                    _context.Products.FirstOrDefault(x => x.Id == product.Id).Quantity += 1;
+                }
+                _context.Orders.Update(order);
+                _context.SaveChanges();
+            }
+        }
+
         public void CompleteOrder(string orderId)
         {
             var order = _context.Orders.FirstOrDefault(x => x.Id == orderId);
             if (order != null)
             {
-                order.IsCompleted = true;
+                order.OrderStatus = OrderStatus.Completed;
                 _context.Orders.Update(order);
                 _context.SaveChanges();
             }
@@ -37,12 +53,16 @@ namespace Backend.Services
             var products = _context.Products;
 
             var ord = _mapper.Map<Order>(orderDto);
+            ord.Id = Guid.NewGuid().ToString();
             List<Product> productsList = new List<Product>(orderDto.OrderedProducts.Count);
             foreach (var prod in orderDto.OrderedProducts)
             {
                 var old = products.FirstOrDefault(x => x.Id == prod.Id);
+                old.Quantity -= 1;
                 productsList.Add(old);
             }
+
+            ord.OrderStatus = OrderStatus.InProgress;
 
             ord.OrderedProducts = productsList;
 
@@ -67,12 +87,20 @@ namespace Backend.Services
             return _mapper.Map<List<OrderDto>>(_context.Orders).ToList();
         }
 
-        public List<OrderDto> GetOrders(string email)
+        public List<OrderDto> GetCanceledOrdersShopper(string email)
         {
             var orders = _context.Orders.Include(x => x.OrderedProducts).ToList();
             var user = _context.Users.FirstOrDefault(x => x.Email == email);
 
-            return _mapper.Map<List<OrderDto>>(orders.Where(x => x.OrderUserEmail == email).ToList());
+            return _mapper.Map<List<OrderDto>>(orders.Where(x => x.OrderUserEmail == email && x.OrderStatus == OrderStatus.Canceled).ToList());
         }
+        public List<OrderDto> GetNonCanceledOrdersShopper(string email)
+        {
+            var orders = _context.Orders.Include(x => x.OrderedProducts).ToList();
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
+
+            return _mapper.Map<List<OrderDto>>(orders.Where(x => x.OrderUserEmail == email && x.OrderStatus != OrderStatus.Canceled).ToList());
+        }
+
     }
 }

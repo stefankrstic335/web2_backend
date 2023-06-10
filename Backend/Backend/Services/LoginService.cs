@@ -38,6 +38,7 @@ namespace Backend.Services
             {
                 return null;
             }
+
             if (BCrypt.Net.BCrypt.Verify(accountLoginDto.Password, user.Password))
             {
                 List<Claim> claims = new List<Claim>();
@@ -81,7 +82,7 @@ namespace Backend.Services
 
                 if(newUser.AccountType == AccountType.Shopper)
                 {
-                    newUser.AccountVerified = true;
+                    newUser.AccountStatus = AccountStatus.Verified;
                 }
 
                 _context.Users.Add(newUser);
@@ -101,7 +102,7 @@ namespace Backend.Services
                 newUser.Id = Guid.NewGuid().ToString();
                 if (newUser.AccountType == AccountType.Shopper)
                 {
-                    newUser.AccountVerified = true;
+                    newUser.AccountStatus = AccountStatus.Verified;
                 }
 
                 _context.Users.Add(newUser);
