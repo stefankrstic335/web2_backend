@@ -62,5 +62,21 @@ namespace Backend.Controllers
             return Ok();
         }
 
+
+        [HttpGet("getNewOrdersMerchant")]
+        [Authorize(Roles = "merchant")]
+        public IActionResult GetNewOrdersMerchant(string email)
+        {
+            return Ok(_orderService.GetNewOrdersMerchant(email));
+        }
+
+
+        [HttpGet("getAllOrdersMerchant")]
+        [Authorize(Roles = "merchant")]
+        public IActionResult GetAllOrdersMerchant(string email)
+        {
+            return Ok(_orderService.GetAllOrdersMerchant(email));
+        }
+
     }
 }

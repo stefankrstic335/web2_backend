@@ -9,7 +9,7 @@ namespace Backend.Interfaces
         void VerifyMerchant(string merchantId);
         List<AccountDataDto> GetMerchants();
         List<AccountDataDto> GetShoppers();
-        AccountLoginDto UpdateAccount(AccountLoginDto accountLoginDto);
+        AccountDataDto UpdateAccount(AccountDataDto accountLoginDto);
         bool IsMerchantVerified(string email);
         string UploadImage(IFormFile imageFile, string email);
         void BlockMerchant(string merchantId);

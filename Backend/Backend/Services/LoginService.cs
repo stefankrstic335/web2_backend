@@ -38,6 +38,10 @@ namespace Backend.Services
             {
                 return null;
             }
+            if(user.AccountStatus == AccountStatus.New || user.AccountStatus == AccountStatus.Blocked)
+            {
+                return "User not verified";
+            }
 
             if (BCrypt.Net.BCrypt.Verify(accountLoginDto.Password, user.Password))
             {

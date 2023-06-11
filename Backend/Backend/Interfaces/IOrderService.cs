@@ -12,5 +12,9 @@ namespace Backend.Interfaces
 
         void CancelOrder(string orderId);
         List<OrderDto> GetNonCanceledOrdersShopper(string email);
+
+        List<OrderDto> GetNewOrdersMerchant(string email);
+
+        List<OrderDto> GetAllOrdersMerchant(string email);
     }
 }

@@ -4,6 +4,7 @@ using Backend.Dto;
 using Backend.Interfaces;
 using Backend.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,20 +53,6 @@ namespace Backend.Services
             return false;
         }
 
-        public AccountLoginDto UpdateAccount(AccountLoginDto accountLoginDto)
-        {
-            var us = _context.Users.FirstOrDefault(x => x.Email == accountLoginDto.Email);
-            var id = us.Id;
-            var accType = us.AccountType;
-            us = _mapper.Map<User>(accountLoginDto);
-            us.Id = id;
-            us.AccountType = accType;
-            us.Password = BCrypt.Net.BCrypt.HashPassword(us.Password);
-            _context.Users.Update(us);
-            _context.SaveChanges();
-            return accountLoginDto;
-        }
-
         public string UploadImage(IFormFile imageFile, string email)
         {
             try
@@ -109,6 +96,32 @@ namespace Backend.Services
             var merchant = _context.Users.Where(x => x.Email == merchantId && x.AccountType == AccountType.Merchant).FirstOrDefault();
             merchant.AccountStatus = AccountStatus.Blocked;
             _context.SaveChanges();
+        }
+
+        public AccountDataDto UpdateAccount(AccountDataDto accountLoginDto)
+        {
+            var us = _context.Users.AsNoTracking().FirstOrDefault(x => x.Email == accountLoginDto.Email);
+            var id = us.Id;
+            var accType = us.AccountType;
+            var accStatus = us.AccountStatus;
+            var imageUrl = us.ImageUrl;
+            var password = us.Password;
+            us = _mapper.Map<User>(accountLoginDto);
+            us.Id = id;
+            us.AccountType = accType;
+            us.AccountStatus = accStatus;
+            us.ImageUrl = imageUrl;
+            us.Password = password;
+            try
+            {
+                _context.Update(us);
+                _context.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return accountLoginDto;
         }
     }
 }

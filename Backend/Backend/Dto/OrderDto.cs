@@ -1,4 +1,5 @@
 ﻿using Backend.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Backend.Dto
@@ -12,6 +13,7 @@ namespace Backend.Dto
         public string ShopperAddress { get; set; }
 
         public OrderStatus Status { get; set; }
+        public DateTime EndTime { get; set; }
 
         public List<ProductDto> OrderedProducts { get; set; }
     }

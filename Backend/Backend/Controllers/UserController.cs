@@ -1,4 +1,5 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Dto;
+using Backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,13 @@ namespace Backend.Controllers
             var formCollection =  await Request.ReadFormAsync();
             var file = formCollection.Files.First();
             return Ok(_userService.UploadImage(file, email));
+        }
+
+        [HttpPost("updateAccount")]
+        [Authorize(Roles = "admin, merchant, shopper")]
+        public IActionResult UpdateAccount(AccountDataDto account)
+        {
+            return Ok(_userService.UpdateAccount(account));
         }
     }
 }

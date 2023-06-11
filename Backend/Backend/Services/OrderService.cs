@@ -102,5 +102,46 @@ namespace Backend.Services
             return _mapper.Map<List<OrderDto>>(orders.Where(x => x.OrderUserEmail == email && x.OrderStatus != OrderStatus.Canceled).ToList());
         }
 
+        public List<OrderDto> GetNewOrdersMerchant(string email)
+        {
+            var orders = _context.Orders.Include(x => x.OrderedProducts).ToList();
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
+
+            List<OrderDto> retList = new List<OrderDto>(0);
+            orders = orders.Where(x=> x.OrderStatus == OrderStatus.InProgress).ToList();
+            foreach(var order in orders)
+            {
+                foreach(var product in order.OrderedProducts)
+                {
+                    if(product.MerchantId == email)
+                    {
+                        retList.Add(_mapper.Map<OrderDto>(order));
+                    }
+                }
+            }
+
+            return retList;
+        }
+        public List<OrderDto> GetAllOrdersMerchant(string email)
+        {
+            var orders = _context.Orders.Include(x => x.OrderedProducts).ToList();
+            var user = _context.Users.FirstOrDefault(x => x.Email == email);
+
+            List<OrderDto> retList = new List<OrderDto>(0);
+            orders = orders.Where(x => x.OrderStatus == OrderStatus.Completed).ToList();
+            foreach (var order in orders)
+            {
+                foreach (var product in order.OrderedProducts)
+                {
+                    if (product.MerchantId == email)
+                    {
+                        retList.Add(_mapper.Map<OrderDto>(order));
+                    }
+                }
+            }
+
+            return retList;
+        }
+
     }
 }
