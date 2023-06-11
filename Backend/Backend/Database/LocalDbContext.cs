@@ -1,5 +1,6 @@
 ﻿using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Reflection;
 
 namespace Backend.Database
@@ -11,6 +12,7 @@ namespace Backend.Database
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
 
+
         public LocalDbContext(DbContextOptions options) : base(options)
         {
 
@@ -20,7 +22,7 @@ namespace Backend.Database
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.Entity<Order>().HasMany(x => x.OrderedProducts).WithMany(x => x.Orders);
-           ;
+           
         }
     }
 }

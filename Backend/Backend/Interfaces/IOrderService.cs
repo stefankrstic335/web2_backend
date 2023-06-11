@@ -16,5 +16,8 @@ namespace Backend.Interfaces
         List<OrderDto> GetNewOrdersMerchant(string email);
 
         List<OrderDto> GetAllOrdersMerchant(string email);
+
+        void CheckCompletedOrders();
+
     }
 }

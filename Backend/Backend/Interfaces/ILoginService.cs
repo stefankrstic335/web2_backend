@@ -7,5 +7,8 @@ namespace Backend.Interfaces
         string Login(AccountLoginDto accountLoginDto);
 
         void Register(AccountDataDto accountDataDto);
+
+        string SocialLogin(AccountDataDto accountDataDto);
+
     }
 }

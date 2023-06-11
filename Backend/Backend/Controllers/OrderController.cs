@@ -22,6 +22,7 @@ namespace Backend.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult GetAllOrders()
         {
+            _orderService.CheckCompletedOrders();
             return Ok(_orderService.GetAllOrders());
         }
 
@@ -30,12 +31,14 @@ namespace Backend.Controllers
         [Authorize(Roles = "shopper")]
         public IActionResult GetNonCanceledOrders(string email)
         {
+            _orderService.CheckCompletedOrders();
             return Ok(_orderService.GetNonCanceledOrdersShopper(email));
         }
         [HttpGet("getCanceledOrders")]
         [Authorize(Roles = "shopper")]
         public IActionResult GetCanceledOrders(string email)
         {
+            _orderService.CheckCompletedOrders();
             return Ok(_orderService.GetCanceledOrdersShopper(email));
         }
 
@@ -67,6 +70,7 @@ namespace Backend.Controllers
         [Authorize(Roles = "merchant")]
         public IActionResult GetNewOrdersMerchant(string email)
         {
+            _orderService.CheckCompletedOrders();
             return Ok(_orderService.GetNewOrdersMerchant(email));
         }
 
@@ -75,6 +79,7 @@ namespace Backend.Controllers
         [Authorize(Roles = "merchant")]
         public IActionResult GetAllOrdersMerchant(string email)
         {
+            _orderService.CheckCompletedOrders();
             return Ok(_orderService.GetAllOrdersMerchant(email));
         }
 

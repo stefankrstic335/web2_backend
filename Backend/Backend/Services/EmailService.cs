@@ -42,7 +42,7 @@ namespace Backend.Services
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(string.Empty, _emailConfig.From));
             emailMessage.To.Add(new MailboxAddress(string.Empty, emailTo));
-            emailMessage.Subject = "Account verification";
+            emailMessage.Subject = "Account blocked";
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = "Your account has been blocked!" };
             return emailMessage;
         }

@@ -53,5 +53,25 @@ namespace Backend.Controllers
 
         }
 
+        [HttpPost("socialLogin")]
+        public IActionResult SocialLogin([FromBody] AccountDataDto socialLoginModel)
+        {
+            var token = _loginService.SocialLogin(socialLoginModel);
+
+            if (token != null)
+            {
+                if (token == string.Empty)
+                {
+                    return BadRequest("Wrong password!");
+
+                }
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest("Wrong email!");
+            }
+        }
+
     }
 }

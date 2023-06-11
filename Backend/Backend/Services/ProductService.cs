@@ -35,6 +35,7 @@ namespace Backend.Services
 
         public List<ProductDto> GetProducts()
         {
+
             return _mapper.Map<List<ProductDto>>(_context.Products);
         }
 

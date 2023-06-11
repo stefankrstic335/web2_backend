@@ -31,6 +31,9 @@ namespace Backend.Models
 
         public AccountStatus AccountStatus { get; set; }
 
+        public bool IsSocialLogin { get; set; }
+
+
         public User() 
         {
             Id = Guid.NewGuid().ToString();

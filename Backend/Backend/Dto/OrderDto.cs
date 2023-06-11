@@ -14,6 +14,7 @@ namespace Backend.Dto
 
         public OrderStatus Status { get; set; }
         public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         public List<ProductDto> OrderedProducts { get; set; }
     }

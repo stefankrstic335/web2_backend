@@ -33,10 +33,10 @@ namespace Backend.Services
             {
                 return null;
             }
-            User user = _context.Users.Where(x => x.Email == accountLoginDto.Email).FirstOrDefault();
+            User user = _context.Users.Where(x => x.Email == accountLoginDto.Email && x.IsSocialLogin == false).FirstOrDefault();
             if (user == null)
             {
-                return null;
+                return "Wrong email or password";
             }
             if(user.AccountStatus == AccountStatus.New || user.AccountStatus == AccountStatus.Blocked)
             {
@@ -71,7 +71,7 @@ namespace Backend.Services
             }
             else
             {
-                return string.Empty;
+                return "Wrong email or password";
             }
         }
 
@@ -83,7 +83,7 @@ namespace Backend.Services
                 User newUser = _mapper.Map<User>(accountDataDto);
                 newUser.Password = BCrypt.Net.BCrypt.HashPassword(accountDataDto.Password);
                 newUser.Id = Guid.NewGuid().ToString();
-
+                newUser.IsSocialLogin = false;
                 if(newUser.AccountType == AccountType.Shopper)
                 {
                     newUser.AccountStatus = AccountStatus.Verified;
@@ -104,6 +104,7 @@ namespace Backend.Services
                 User newUser = _mapper.Map<User>(accountDataDto);
                 newUser.Password = BCrypt.Net.BCrypt.HashPassword(accountDataDto.Password);
                 newUser.Id = Guid.NewGuid().ToString();
+                newUser.IsSocialLogin = false;
                 if (newUser.AccountType == AccountType.Shopper)
                 {
                     newUser.AccountStatus = AccountStatus.Verified;
@@ -111,9 +112,77 @@ namespace Backend.Services
 
                 _context.Users.Add(newUser);
                 _context.SaveChanges();
+
+
+
                 return;
 
             }
+        }
+
+        public string SocialLogin(AccountDataDto accountDataDto)
+        {
+            User user = _context.Users.Where(x => x.Email == accountDataDto.Email && x.IsSocialLogin == true).FirstOrDefault();
+
+            if(user == null)
+            {
+                User newUser = _mapper.Map<User>(accountDataDto);
+                newUser.Password = BCrypt.Net.BCrypt.HashPassword(accountDataDto.Username); // GMAIL ID stavljen u username
+                newUser.Id = Guid.NewGuid().ToString();
+                newUser.IsSocialLogin = true;
+                newUser.AccountStatus = AccountStatus.Verified;
+                newUser.AccountType = AccountType.Shopper;
+                newUser.DateOfBirth = DateTime.Now;
+                newUser.Username = newUser.Email;
+                _context.Users.Add(newUser);
+                _context.SaveChanges();
+
+                List<Claim> claims = new List<Claim>() { new Claim(ClaimTypes.Role, "shopper") };
+                SymmetricSecurityKey secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey.Value));
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: "http://localhost:44398",
+                    claims: claims, //claimovi
+                    expires: DateTime.Now.AddMinutes(20),
+                    signingCredentials: signinCredentials
+                );
+                return new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            }
+            else
+            {
+
+                if (BCrypt.Net.BCrypt.Verify(accountDataDto.Username, user.Password)) { 
+                
+                    List<Claim> claims = new List<Claim>();
+                    if (user.AccountType == AccountType.Administrator)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "admin"));
+                    }
+                    if (user.AccountType == AccountType.Shopper)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "shopper"));
+                    }
+                    if (user.AccountType == AccountType.Merchant)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "merchant"));
+                    }
+                    SymmetricSecurityKey secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey.Value));
+                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                    var tokeOptions = new JwtSecurityToken(
+                        issuer: "http://localhost:44398",
+                        claims: claims, //claimovi
+                        expires: DateTime.Now.AddMinutes(20),
+                        signingCredentials: signinCredentials
+                    );
+                    return new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+
         }
     }
 }

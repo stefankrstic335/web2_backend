@@ -91,7 +91,7 @@ namespace Backend
                 options.AddPolicy("AnyOrigin", builder =>
                 {
                     builder
-                        .WithOrigins("http://localhost:3000")
+                        .WithOrigins("https://localhost:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 });

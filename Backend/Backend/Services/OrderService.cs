@@ -69,7 +69,7 @@ namespace Backend.Services
             var seed = 3;
             var random = new Random(seed);
 
-            var rNum = random.Next(48, 120);
+            var rNum = random.Next(60, 360);
 
 
             ord.StartTime = DateTime.Now;
@@ -104,6 +104,7 @@ namespace Backend.Services
 
         public List<OrderDto> GetNewOrdersMerchant(string email)
         {
+
             var orders = _context.Orders.Include(x => x.OrderedProducts).ToList();
             var user = _context.Users.FirstOrDefault(x => x.Email == email);
 
@@ -141,6 +142,19 @@ namespace Backend.Services
             }
 
             return retList;
+        }
+
+        public void CheckCompletedOrders()
+        {
+            foreach (var order in _context.Orders)
+            {
+                if (order.EndTime < DateTime.Now)
+                {
+                    order.OrderStatus = OrderStatus.Completed;
+                }
+            }
+            _context.SaveChanges();
+
         }
 
     }
